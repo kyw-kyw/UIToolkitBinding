@@ -1,0 +1,42 @@
+﻿# top-most EditorConfig file
+root = true
+
+# Default settings:
+# A newline ending every file
+# Use 4 spaces as indentation
+[*]
+charset = utf-8-bom
+end_of_line = lf
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Solution files
+[*.{sln,slnx}]
+indent_size = 2
+
+# MSBuild project files
+[*.{csproj,props,targets}]
+indent_size = 2
+
+# JSON files
+[*.json]
+indent_size = 2
+
+# Markdown files
+[*.md]
+charset = utf-8-bom
+trim_trailing_whitespace = false
+
+# C# code style settings
+[*.{cs}]
+
+# IDE0044: Make field readonly
+dotnet_diagnostic.IDE0044.severity = none
+
+# IDE0051: Remove unused private member
+dotnet_diagnostic.IDE0051.severity = none
+
+# IDE0130: Namespace does not match folder structure
+dotnet_diagnostic.IDE0130.severity = none
