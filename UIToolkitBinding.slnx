@@ -1,2 +1,5 @@
 ﻿<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/UIToolkitBinding/UIToolkitBinding.csproj" Id="5eb4aaf5-cec0-41fb-b28f-1b87a68cbfba" />
+  </Folder>
 </Solution>
