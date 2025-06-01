@@ -7,6 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>UIToolkitBinding</RootNamespace>
     <DefineConstants>SOURCE_GENERATOR</DefineConstants>
+    <NoWarn>IDE0305</NoWarn>
     <!-- Source Generator -->
     <AnalyzerLanguage>cs</AnalyzerLanguage>
     <IsRoslynComponent>true</IsRoslynComponent>
@@ -19,6 +20,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="../UIToolkitBinding/Accessibility.cs" />
   </ItemGroup>
 
 </Project>
