@@ -1,5 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace UIToolkitBinding.SourceGenerator.Tests;
@@ -33,6 +36,23 @@ global using UIToolkitBinding;
         {
             yield return MetadataReference.CreateFromFile(typeof(UITKDataSourceObjectAttribute).Assembly.Location);
         }
+    }
+
+    public static (Compilation, ImmutableArray<Diagnostic>) RunGenerator([StringSyntax("C#-test")] string source, string[]? preprocessorSymbols = null, AnalyzerConfigOptionsProvider? options = null)
+    {
+        preprocessorSymbols ??= ["NET8_0_OR_GREATER"];
+
+        var parseOptions = new CSharpParseOptions(LanguageVersion.CSharp13, preprocessorSymbols: preprocessorSymbols);
+
+        var driver = CSharpGeneratorDriver.Create(new UIToolkitBindingSourceGenerator()).WithUpdatedParseOptions(parseOptions);
+        if (options != null)
+        {
+            driver = (CSharpGeneratorDriver)driver.WithUpdatedAnalyzerConfigOptions(options);
+        }
+
+        var compilation = baseCompilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(source, parseOptions));
+        driver.RunGeneratorsAndUpdateCompilation(compilation, out var newCompilation, out var diagnostics);
+        return (newCompilation, diagnostics);
     }
 
     public static (string Key, string Reasons)[][] GetIncrementalGeneratorTrackedStepsReasons(string keyPrefixFilter, params string[] sources)
