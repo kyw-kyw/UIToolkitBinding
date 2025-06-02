@@ -3,6 +3,7 @@
     <Project Path="sandbox/SourceGeneratorSandbox/SourceGeneratorSandbox.csproj" Id="6f383fca-e26a-4a53-a53a-907ce95f605c" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/UIToolkitBinding.CodeFixer/UIToolkitBinding.CodeFixer.csproj" Id="eafbc075-ae50-4c8b-bf6d-82a981a28fdd" />
     <Project Path="src/UIToolkitBinding.SourceGenerator/UIToolkitBinding.SourceGenerator.csproj" Id="d4b4bcf1-4d1f-47bc-9cfe-f1965c669f21" />
     <Project Path="src/UIToolkitBinding/UIToolkitBinding.csproj" Id="5eb4aaf5-cec0-41fb-b28f-1b87a68cbfba" />
   </Folder>
