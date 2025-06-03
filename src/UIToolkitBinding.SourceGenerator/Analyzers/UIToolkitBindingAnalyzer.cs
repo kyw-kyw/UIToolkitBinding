@@ -14,7 +14,8 @@ public sealed class UIToolkitBindingAnalyzer : DiagnosticAnalyzer
             DiagnosticDescriptors.NestNotAllowed,
             DiagnosticDescriptors.InvalidSetAccessor,
             DiagnosticDescriptors.UnnecessaryDataSourceAttribute,
-            DiagnosticDescriptors.UnnecessaryBindableFieldAttribute);
+            DiagnosticDescriptors.UnnecessaryBindableFieldAttribute,
+            DiagnosticDescriptors.InvalidInheritance);
 
     public override void Initialize(AnalysisContext context)
     {
@@ -53,6 +54,11 @@ public sealed class UIToolkitBindingAnalyzer : DiagnosticAnalyzer
             if (!typeDeclaration.Modifiers.Any(x => x.IsKind(SyntaxKind.PartialKeyword)))
             {
                 context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.MustBePartial, typeDeclaration.Identifier.GetLocation(), typeDeclaration.Identifier.ToFullString().Trim()));
+            }
+            if (!IsValidInheritance(declaredSymbol, out var namedTypeSymbol))
+            {
+                context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.InvalidInheritance, typeDeclaration.Identifier.GetLocation(), namedTypeSymbol!.Name));
+                return;
             }
 
             AnalyzeMembers(context, semanticModel, declaredSymbol);
@@ -106,5 +112,21 @@ public sealed class UIToolkitBindingAnalyzer : DiagnosticAnalyzer
                 context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.InvalidSetAccessor, location, declaredAccessibility, setterAccessibility));
             }
         }
+    }
+
+    static bool IsValidInheritance(INamedTypeSymbol typeSymbol, out INamedTypeSymbol? errorSourceType)
+    {
+        errorSourceType = null;
+        while (typeSymbol.BaseType is { } baseTypeSymbol)
+        {
+            if (baseTypeSymbol.ContainsAttribute(AttributeConstants.UITKDataSourceObjectAttribute)) return IsValidInheritance(baseTypeSymbol, out errorSourceType);
+            if (baseTypeSymbol.Interfaces.Any(x => x.ToDisplayString() == "UnityEngine.UIElements.INotifyBindablePropertyChanged"))
+            {
+                errorSourceType = baseTypeSymbol;
+                return false;
+            }
+            typeSymbol = baseTypeSymbol;
+        }
+        return true;
     }
 }

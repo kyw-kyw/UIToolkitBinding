@@ -9,6 +9,12 @@ data.propertyChanged += (s, e) =>
 data.Data1 = 1;
 data.Data2 = 1;
 
+var sub = new Sub();
+sub.propertyChanged += (s, e) => Console.WriteLine(e.propertyName);
+sub.SubValue = 1;
+sub.BaseValue = 1;
+
+
 [UITKDataSourceObject]
 public partial class DataSource(int id)
 {
@@ -18,11 +24,24 @@ public partial class DataSource(int id)
 
     partial void OnData2Changing(int currentValue, int newValue)
     {
-        Console.WriteLine($"OnData2Changing: {currentValue} -> {currentValue}");
+        Console.WriteLine($"OnData2Changing: {currentValue} -> {newValue}");
     }
 
     partial void OnData2Changed(int oldValue, int currentValue)
     {
         Console.WriteLine($"OnData2Changed: {oldValue} -> {currentValue}");
     }
+}
+
+
+[UITKDataSourceObject]
+public partial class Base
+{
+    [UITKBindableField] int baseValue;
+}
+
+[UITKDataSourceObject]
+public partial class Sub : Base
+{
+    [UITKBindableField] int subValue;
 }

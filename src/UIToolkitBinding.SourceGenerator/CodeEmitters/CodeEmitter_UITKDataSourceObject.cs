@@ -29,15 +29,22 @@ namespace {{context.Namespace}}
         Buffer.AppendLine($$"""
 partial class {{context.ClassName}} : INotifyBindablePropertyChanged
 {
-    public event EventHandler<BindablePropertyChangedEventArgs> propertyChanged;
-
-{{AppendProperties(context)}}
-    void NotifyPropertyChanged(BindablePropertyChangedEventArgs e)
+""");
+        if (!context.IsDerivedUITKDataSourceObjectClass && !context.HasInterfaceImplemented)
+        {
+            Buffer.AppendLine("    public event EventHandler<BindablePropertyChangedEventArgs> propertyChanged;");
+            Buffer.AppendLine();
+        }
+        Buffer.AppendLine(AppendProperties(context));
+        if (!context.IsDerivedUITKDataSourceObjectClass)
+        {
+            Buffer.AppendLine($$"""
+    protected void NotifyPropertyChanged(BindablePropertyChangedEventArgs e)
     {
         propertyChanged?.Invoke(this, e);
     }
 
-    bool SetProperty<T>(ref T field, in T value, in BindablePropertyChangedEventArgs eventArgs)
+    protected bool SetProperty<T>(ref T field, in T value, in BindablePropertyChangedEventArgs eventArgs)
     {
         if (EqualityComparer<T>.Default.Equals(field, value)) return false;
 
@@ -46,8 +53,13 @@ partial class {{context.ClassName}} : INotifyBindablePropertyChanged
         return true;
     }
 
-{{AppendOnPropertyChangeMethods(context)}}
-    internal static partial class EventArgsCache
+""");
+        }
+        Buffer.AppendLine(AppendOnPropertyChangeMethods(context));
+        Buffer.Append(new string(' ', 4));
+        if (context.IsDerivedUITKDataSourceObjectClass) Buffer.Append("new ");
+        Buffer.AppendLine("internal static partial class EventArgsCache");
+        Buffer.AppendLine($$"""
     {
 {{AppendEventArgsCacheProperties(context)}}
     }
@@ -86,7 +98,7 @@ partial class {{context.ClassName}} : INotifyBindablePropertyChanged
             On{{member.PropertyName}}Changed();
             On{{member.PropertyName}}Changed(value);
             On{{member.PropertyName}}Changed(oldValue, value);
-            propertyChanged?.Invoke(this, EventArgsCache.{{member.PropertyName}}Changed);
+            {{NotifyPropertyChanged(member, context.IsDerivedUITKDataSourceObjectClass)}}
         }
     }
 """);
@@ -96,6 +108,12 @@ partial class {{context.ClassName}} : INotifyBindablePropertyChanged
         var result = TempBuffer.ToString();
         TempBuffer.Clear();
         return result;
+
+        static string NotifyPropertyChanged(UITKBindableMemberContext member, bool isInherited)
+        {
+            if (isInherited) return $"NotifyPropertyChanged(EventArgsCache.{member.PropertyName}Changed);";
+            return $"propertyChanged?.Invoke(this, EventArgsCache.{member.PropertyName}Changed);";
+        }
     }
     static string AppendOnPropertyChangeMethods(UITKDataSourceObjectContext context)
     {

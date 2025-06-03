@@ -11,6 +11,7 @@ public static class DiagnosticDescriptors
     public const string InvalidSetAccessorId = "UITKBIND003";
     public const string UnnecessaryDataSourceAttributeId = "UITKBIND004";
     public const string UnnecessaryBindableFieldAttributeId = "UITKBIND005";
+    public const string InvalidInheritanceId = "UITKBIND006";
 
     public static readonly DiagnosticDescriptor MustBePartial = new(
         id: MustBePartialId,
@@ -50,5 +51,13 @@ public static class DiagnosticDescriptors
         messageFormat: "Since static fields cannot bind value, there is no need to assign the UITKBindableField attribute to static fields.",
         category: Category,
         defaultSeverity: DiagnosticSeverity.Warning,
+        isEnabledByDefault: true);
+
+    public static readonly DiagnosticDescriptor InvalidInheritance = new(
+        id: InvalidInheritanceId,
+        title: "The parent class implemented INotifyBindablePropertyChanged must be given UITKDataSourceObject attribute.",
+        messageFormat: "The parent class '{0}' implemented INotifyBindablePropertyChanged must be given UITKDataSourceObject attribute.",
+        category: Category,
+        defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true);
 }
