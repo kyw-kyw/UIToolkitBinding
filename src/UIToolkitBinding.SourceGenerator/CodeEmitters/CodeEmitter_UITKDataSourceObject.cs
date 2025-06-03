@@ -13,6 +13,7 @@ internal sealed class CodeEmitter_UITKDataSourceObject : CodeEmitter
 #nullable enable
 
 using System;
+using System.Collections.Generic;
 using UIToolkitBinding;
 using Unity.Properties;
 using UnityEngine;
