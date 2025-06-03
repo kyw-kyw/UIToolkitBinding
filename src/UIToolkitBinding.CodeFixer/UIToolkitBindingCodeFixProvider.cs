@@ -16,7 +16,8 @@ public sealed class UIToolkitBindingCodeFixProvider : CodeFixProvider
     public override ImmutableArray<string> FixableDiagnosticIds { get; } = ImmutableArray.Create(
             DiagnosticDescriptors.MustBePartialId,
             DiagnosticDescriptors.UnnecessaryDataSourceAttributeId,
-            DiagnosticDescriptors.UnnecessaryBindableFieldAttributeId);
+            DiagnosticDescriptors.UnnecessaryBindableFieldAttributeId,
+            DiagnosticDescriptors.DontCreatePropertyAttributeShouldBeGivenId);
 
     public override FixAllProvider? GetFixAllProvider()
     {
@@ -36,6 +37,17 @@ public sealed class UIToolkitBindingCodeFixProvider : CodeFixProvider
             SyntaxNode? diagnosticTargetNode = root.FindNode(diagnostic.Location.SourceSpan);
             switch (diagnostic.Id)
             {
+                case DiagnosticDescriptors.DontCreatePropertyAttributeShouldBeGivenId:
+                    if (diagnosticTargetNode?.AncestorsAndSelf().FirstOrDefault(n => n is FieldDeclarationSyntax) is FieldDeclarationSyntax fieldDeclaration)
+                    {
+                        context.RegisterCodeFix(
+                            CodeAction.Create(
+                                "Add DontCreatePropertyAttribute",
+                                ct => AddDontCreatePropertyAttributeAsync(context.Document, fieldDeclaration, ct),
+                                "UIToolkitBindingAnalyzer.AddDontCreatePropertyAttribute"),
+                            diagnostic);
+                    }
+                    break;
                 case DiagnosticDescriptors.MustBePartialId when diagnosticTargetNode is BaseTypeDeclarationSyntax typeDeclarationSyntax:
                     context.RegisterCodeFix(
                             CodeAction.Create(
@@ -62,6 +74,15 @@ public sealed class UIToolkitBindingCodeFixProvider : CodeFixProvider
                     break;
             }
         }
+    }
+
+    static async Task<Solution> AddDontCreatePropertyAttributeAsync(Document document, FieldDeclarationSyntax fieldDecl, CancellationToken cancellationToken)
+    {
+        SolutionEditor solutionEditor = new(document.Project.Solution);
+        DocumentEditor documentEditor = await solutionEditor.GetDocumentEditorAsync(document.Id, cancellationToken);
+        SyntaxGenerator syntaxGenerator = SyntaxGenerator.GetGenerator(documentEditor.OriginalDocument);
+        documentEditor.AddAttribute(fieldDecl, syntaxGenerator.Attribute(AttributeConstants.DontCreatePropertyAttribute));
+        return solutionEditor.GetChangedSolution();
     }
 
     static Task<Document> AddPartialModifierAsync(Document document, SyntaxNode syntaxRoot, BaseTypeDeclarationSyntax typeDecl, Diagnostic diagnostic, CancellationToken cancellationToken)
