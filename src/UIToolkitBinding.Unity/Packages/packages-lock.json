@@ -27,6 +27,18 @@
       },
       "url": "https://packages.unity.com"
     },
+    "jp.kyw-kyw.ui-tool-kit-binding-analyzer-develop": {
+      "version": "file:../../UIToolkitBinding.CodeFixer/bin/Debug/netstandard2.0",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
+    "jp.kyw-kyw.ui-tool-kit-binding-develop": {
+      "version": "file:../../UIToolkitBinding/bin/Debug/netstandard2.0",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
     "com.unity.modules.hierarchycore": {
       "version": "1.0.0",
       "depth": 1,

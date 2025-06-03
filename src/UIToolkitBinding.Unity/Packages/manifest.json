@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "jp.kyw-kyw.ui-tool-kit-binding-develop": "file:../../UIToolkitBinding/bin/Debug/netstandard2.0",
+    "jp.kyw-kyw.ui-tool-kit-binding-analyzer-develop": "file:../../UIToolkitBinding.CodeFixer/bin/Debug/netstandard2.0",
     "com.unity.ide.visualstudio": "2.0.23",
     "com.unity.modules.uielements": "1.0.0"
   }
