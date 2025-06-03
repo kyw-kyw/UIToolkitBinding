@@ -15,7 +15,8 @@ public sealed class UIToolkitBindingAnalyzer : DiagnosticAnalyzer
             DiagnosticDescriptors.InvalidSetAccessor,
             DiagnosticDescriptors.UnnecessaryDataSourceAttribute,
             DiagnosticDescriptors.UnnecessaryBindableFieldAttribute,
-            DiagnosticDescriptors.InvalidInheritance);
+            DiagnosticDescriptors.InvalidInheritance,
+            DiagnosticDescriptors.DontCreatePropertyAttributeShouldBeGiven);
 
     public override void Initialize(AnalysisContext context)
     {
@@ -111,6 +112,15 @@ public sealed class UIToolkitBindingAnalyzer : DiagnosticAnalyzer
                 var location = Location.Create(semanticModel.SyntaxTree, bindableFieldAttribute.ApplicationSyntaxReference.Span);
                 context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.InvalidSetAccessor, location, declaredAccessibility, setterAccessibility));
             }
+        }
+
+        var serializeField = fieldSymbol.GetAttributes().FirstOrDefault(x => x.AttributeClass?.ToDisplayString() == AttributeConstants.SerializeFieldAttribute);
+        var dontCreateProperty = fieldSymbol.GetAttributes().FirstOrDefault(x => x.AttributeClass?.ToDisplayString() == AttributeConstants.DontCreatePropertyAttribute);
+
+        if ((serializeField != null && dontCreateProperty == null)
+            || (fieldSymbol.DeclaredAccessibility == Accessibility.Public && dontCreateProperty == null))
+        {
+            context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.DontCreatePropertyAttributeShouldBeGiven, fieldSymbol.Locations[0]));
         }
     }
 

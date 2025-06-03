@@ -12,6 +12,7 @@ public static class DiagnosticDescriptors
     public const string UnnecessaryDataSourceAttributeId = "UITKBIND004";
     public const string UnnecessaryBindableFieldAttributeId = "UITKBIND005";
     public const string InvalidInheritanceId = "UITKBIND006";
+    public const string DontCreatePropertyAttributeShouldBeGivenId = "UITKBIND007";
 
     public static readonly DiagnosticDescriptor MustBePartial = new(
         id: MustBePartialId,
@@ -59,5 +60,13 @@ public static class DiagnosticDescriptors
         messageFormat: "The parent class '{0}' implemented INotifyBindablePropertyChanged must be given UITKDataSourceObject attribute.",
         category: Category,
         defaultSeverity: DiagnosticSeverity.Error,
+        isEnabledByDefault: true);
+
+    public static readonly DiagnosticDescriptor DontCreatePropertyAttributeShouldBeGiven = new(
+        id: DontCreatePropertyAttributeShouldBeGivenId,
+        title: "DontCreateProperty attribute should be given",
+        messageFormat: "If a field with UITKBindableField attribute is public or has SerializeField attribute, DontCreateProperty attribute should be given. By giving the DontCreateProperty attribute, the binding will go through the property rather than the field.",
+        category: Category,
+        defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true);
 }

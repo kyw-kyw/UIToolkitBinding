@@ -1,0 +1,24 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Sample/UIToolkit/Uss/Counter.uss?fileID=7433441132597879392&amp;guid=282028a2b3f9d79478351c8008bd8976&amp;type=3#Counter" />
+    <Style src="project://database/Assets/Sample/UIToolkit/Uss/ScreenAnchor.uss?fileID=7433441132597879392&amp;guid=33923f850050a0f4ebe3ac321b6288fc&amp;type=3#ScreenAnchor" />
+    <engine:VisualElement name="counter__main-container" data-source-type="Sample.Counter, Assembly-CSharp" class="screen__anchor--center">
+        <engine:Label name="counter-label" class="counter__label">
+            <Bindings>
+                <engine:DataBinding property="text" data-source-path="Count" binding-mode="ToTarget" />
+            </Bindings>
+        </engine:Label>
+        <engine:VisualElement name="counter-button-container" class="counter__button--container">
+            <engine:Button text="-" name="counter-sub-button" class="counter__button" />
+            <engine:Button text="+" name="counter-add-button" class="counter__button" />
+        </engine:VisualElement>
+        <engine:IntegerField label="Direct input." max-length="2147483647" name="counter-input-field" is-delayed="true" class="counter__IntegerField">
+            <Bindings>
+                <engine:DataBinding property="value" data-source-path="Count" binding-mode="Twoway" />
+            </Bindings>
+        </engine:IntegerField>
+    </engine:VisualElement>
+    <engine:VisualElement name="counter__control-container" class="counter__control--container" style="align-items: flex-end;">
+        <engine:Button text="Reset" name="counter-reset-button" class="counter__control-button" />
+        <engine:Button text="Quit" name="counter-quit-button" class="counter__control-button" />
+    </engine:VisualElement>
+</engine:UXML>

@@ -1,0 +1,11 @@
+{
+  "name": "jp.kyw-kyw.ui-tool-kit-binding-develop",
+  "displayName": "UI Toolkit Binding",
+  "version": "1.0.0",
+  "unity": "6000.0",
+  "author": {
+    "name": "kyw-kyw",
+    "url": "https://github.com/kyw-kyw"
+  },
+  "description": "C# Source Generator for UI Toolkit that will help greatly reduce boilerplate when implement INotifyBindablePropertyChanged."
+}
