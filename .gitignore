@@ -100,3 +100,13 @@ $RECYCLE.BIN/
 
 # Mac desktop service store files
 .DS_Store
+
+# Unity
+src/UIToolkitBinding.Unity/bin
+src/UIToolkitBinding.Unity/Library
+src/UIToolkitBinding.Unity/obj
+src/UIToolkitBinding.Unity/Logs
+src/UIToolkitBinding.Unity/Temp
+src/UIToolkitBinding.Unity/UserSettings
+src/UIToolkitBinding.Unity/*.sln
+src/UIToolkitBinding.Unity/*.csproj
