@@ -1,0 +1,45 @@
+.counter__label {
+    font-size: 72px;
+    height: 100px;
+    -unity-text-align: middle-center;
+}
+
+.counter__button--container {
+    flex-direction: row;
+}
+
+.counter__button {
+    font-size: 72px;
+    -unity-text-align: middle-center;
+    width: 100px;
+    margin-right: 20px;
+    margin-left: 20px;
+}
+
+.counter__IntegerField {
+    font-size: 36px;
+    -unity-text-align: middle-center;
+    width: 500px;
+    margin-top: 15px;
+}
+
+.counter__control--container {
+    width: 400px;
+    height: 400px;
+    justify-content: center;
+    align-self: center;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+
+.counter__control-button {
+    font-size: 36px;
+    -unity-text-align: middle-center;
+    align-self: center;
+    width: 250px;
+    margin-right: 20px;
+    margin-left: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
