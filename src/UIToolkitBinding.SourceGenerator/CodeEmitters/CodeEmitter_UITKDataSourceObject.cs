@@ -47,7 +47,7 @@ partial class {{context.ClassName}} : INotifyBindablePropertyChanged
 
     protected bool SetProperty<T>(ref T field, in T value, in BindablePropertyChangedEventArgs eventArgs)
     {
-        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+        if (global::System.Collections.Generic.EqualityComparer<T>.Default.Equals(field, value)) return false;
 
         field = value;
         propertyChanged?.Invoke(this, eventArgs);
@@ -83,6 +83,7 @@ partial class {{context.ClassName}} : INotifyBindablePropertyChanged
         for (int i = 0; i < context.Members.Length; i++)
         {
             var member = context.Members[i];
+            var oldValueExpression = member.IsOldPropertyValueDirectlyReferenced ? "__oldValue" : "default";
             TempBuffer.AppendLine($$"""
     [CreateProperty]
     {{member.DeclaredAccessibility.ToKeyword()}} {{member.Type}} {{member.PropertyName}}
@@ -91,14 +92,18 @@ partial class {{context.ClassName}} : INotifyBindablePropertyChanged
         {{member.SetterAccessibility.ToSetterAccessorDeclaration()}}
         {
             if (global::System.Collections.Generic.EqualityComparer<{{member.Type}}>.Default.Equals({{member.GetFieldExpressionInSetAccessor()}}, value)) return;
+""");
+            if (member.IsOldPropertyValueDirectlyReferenced) TempBuffer.AppendLine($$"""
+            {{member.Type}} {{oldValueExpression}} = {{member.GetFieldExpressionInSetAccessor()}};
+""");
+            TempBuffer.AppendLine($$"""
             On{{member.PropertyName}}Changing();
             On{{member.PropertyName}}Changing(value);
-            On{{member.PropertyName}}Changing({{member.GetFieldExpressionInSetAccessor()}}, value);
-            var oldValue = {{member.GetFieldExpressionInSetAccessor()}};
+            On{{member.PropertyName}}Changing({{oldValueExpression}}, value);
             {{member.GetFieldExpressionInSetAccessor()}} = value;
             On{{member.PropertyName}}Changed();
             On{{member.PropertyName}}Changed(value);
-            On{{member.PropertyName}}Changed(oldValue, value);
+            On{{member.PropertyName}}Changed({{oldValueExpression}}, value);
             {{NotifyPropertyChanged(member, context.IsDerivedUITKDataSourceObjectClass)}}
         }
     }
@@ -124,10 +129,10 @@ partial class {{context.ClassName}} : INotifyBindablePropertyChanged
             TempBuffer.AppendLine($"""
     partial void On{member.PropertyName}Changing();
     partial void On{member.PropertyName}Changing({member.Type} newValue);
-    partial void On{member.PropertyName}Changing({member.Type} currentValue, {member.Type} newValue);
+    partial void On{member.PropertyName}Changing({member.Type} oldValue, {member.Type} newValue);
     partial void On{member.PropertyName}Changed();
-    partial void On{member.PropertyName}Changed({member.Type} currentValue);
-    partial void On{member.PropertyName}Changed({member.Type} oldValue, {member.Type} currentValue);
+    partial void On{member.PropertyName}Changed({member.Type} newValue);
+    partial void On{member.PropertyName}Changed({member.Type} oldValue, {member.Type} newValue);
 """);
         }
         var result = TempBuffer.ToString();
@@ -140,11 +145,9 @@ partial class {{context.ClassName}} : INotifyBindablePropertyChanged
         TempBuffer.Clear();
         foreach (var member in context.Members)
         {
-
             TempBuffer.AppendLine($$"""
         internal static readonly BindablePropertyChangedEventArgs {{member.PropertyName}}Changed = new(nameof({{member.PropertyName}}));
 """);
-
         }
         var result = TempBuffer.ToString();
         TempBuffer.Clear();

@@ -9,6 +9,7 @@ internal sealed record UITKBindableFieldContext : UITKBindableMemberContext
     public required override string PropertyName { get; init; }
     public override DeclaredAccessibility DeclaredAccessibility { get; init; }
     public override SetterAccessibility SetterAccessibility { get; init; }
+    public override bool IsOldPropertyValueDirectlyReferenced { get; init; }
 
     public static UITKBindableFieldContext? Create(IFieldSymbol fieldSymbol)
     {
@@ -18,6 +19,9 @@ internal sealed record UITKBindableFieldContext : UITKBindableMemberContext
             .FirstOrDefault(static x => x.AttributeClass?.ToDisplayString() == AttributeConstants.UITKBindableFieldAttribute);
 
         if (bindableFieldAttribute == null) return null;
+
+        var fieldName = fieldSymbol.Name;
+        var propertyName = ToPropertyName(fieldName);
 
         var args = bindableFieldAttribute.ConstructorArguments;
         var declaredAccessibility = DeclaredAccessibility.Public;
@@ -38,14 +42,32 @@ internal sealed record UITKBindableFieldContext : UITKBindableMemberContext
             }
         }
 
+        var isOldPropertyValueDirectlyReferenced = HasImplementedPartialMethodWithOldValueAsArgs(fieldSymbol.ContainingType, propertyName);
+
         return new UITKBindableFieldContext()
         {
             Type = fieldSymbol.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-            FieldName = fieldSymbol.Name,
-            PropertyName = ToPropertyName(fieldSymbol.Name),
+            FieldName = fieldName,
+            PropertyName = propertyName,
             DeclaredAccessibility = declaredAccessibility,
             SetterAccessibility = setterAccessibility,
+            IsOldPropertyValueDirectlyReferenced = isOldPropertyValueDirectlyReferenced
         };
+    }
+
+    static bool HasImplementedPartialMethodWithOldValueAsArgs(INamedTypeSymbol? typeSymbol, string propertyName)
+    {
+        if (typeSymbol == null) return false;
+
+        foreach (var symbol in typeSymbol.GetMembers($"On{propertyName}Changing"))
+        {
+            if (symbol is IMethodSymbol { Parameters.Length: 2 }) return true;
+        }
+        foreach (var symbol in typeSymbol.GetMembers($"On{propertyName}Changed"))
+        {
+            if (symbol is IMethodSymbol { Parameters.Length: 2 }) return true;
+        }
+        return false;
     }
 
     static string ToPropertyName(string fieldName)

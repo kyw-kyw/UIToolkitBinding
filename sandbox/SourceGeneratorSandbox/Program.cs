@@ -22,14 +22,14 @@ public partial class DataSource(int id)
     [UITKBindableField] int data1;
     [UITKBindableField(SetterAccessibility.Internal)] int data2;
 
-    partial void OnData2Changing(int currentValue, int newValue)
+    partial void OnData2Changing(int oldValue, int newValue)
     {
-        Console.WriteLine($"OnData2Changing: {currentValue} -> {newValue}");
+        Console.WriteLine($"OnData2Changing: {oldValue} -> {newValue}");
     }
 
-    partial void OnData2Changed(int oldValue, int currentValue)
+    partial void OnData2Changed(int oldValue, int newValue)
     {
-        Console.WriteLine($"OnData2Changed: {oldValue} -> {currentValue}");
+        Console.WriteLine($"OnData2Changed: {oldValue} -> {newValue}");
     }
 }
 

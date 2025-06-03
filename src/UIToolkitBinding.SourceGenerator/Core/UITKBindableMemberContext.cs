@@ -9,6 +9,7 @@ internal abstract record UITKBindableMemberContext
     public abstract string PropertyName { get; init; }
     public abstract DeclaredAccessibility DeclaredAccessibility { get; init; }
     public abstract SetterAccessibility SetterAccessibility { get; init; }
+    public abstract bool IsOldPropertyValueDirectlyReferenced { get; init; }
 
     public string GetFieldExpressionInGetAccessor()
     {
