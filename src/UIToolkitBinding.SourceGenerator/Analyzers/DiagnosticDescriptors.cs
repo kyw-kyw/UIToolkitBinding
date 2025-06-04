@@ -20,7 +20,8 @@ public static class DiagnosticDescriptors
         messageFormat: "UITKDataSource '{0}' must be partial",
         category: Category,
         defaultSeverity: DiagnosticSeverity.Error,
-        isEnabledByDefault: true);
+        isEnabledByDefault: true,
+        helpLinkUri: GetHelpLink(MustBePartialId));
 
     public static readonly DiagnosticDescriptor InvalidNest = new(
         id: InvalidNestId,
@@ -28,7 +29,8 @@ public static class DiagnosticDescriptors
         messageFormat: "The parent '{0}'of nested type '{1}' must be partial",
         category: Category,
         defaultSeverity: DiagnosticSeverity.Error,
-        isEnabledByDefault: true);
+        isEnabledByDefault: true,
+        helpLinkUri: GetHelpLink(InvalidNestId));
 
     public static readonly DiagnosticDescriptor InvalidSetAccessor = new(
         id: InvalidSetAccessorId,
@@ -36,7 +38,8 @@ public static class DiagnosticDescriptors
         messageFormat: "The accessibility modifier of set accessor must be more restrictive than the property.  property: {0}, set accessor: {1}",
         category: Category,
         defaultSeverity: DiagnosticSeverity.Error,
-        isEnabledByDefault: true);
+        isEnabledByDefault: true,
+        helpLinkUri: GetHelpLink(InvalidSetAccessorId));
 
     public static readonly DiagnosticDescriptor UnnecessaryDataSourceAttribute = new(
         id: UnnecessaryDataSourceAttributeId,
@@ -44,7 +47,8 @@ public static class DiagnosticDescriptors
         messageFormat: "Static types cannot be used as a data source, so UITKDataSourceObject attribute is not necessary",
         category: Category,
         defaultSeverity: DiagnosticSeverity.Warning,
-        isEnabledByDefault: true);
+        isEnabledByDefault: true,
+        helpLinkUri: GetHelpLink(UnnecessaryDataSourceAttributeId));
 
     public static readonly DiagnosticDescriptor NoNeedToAssignUITKBindableFieldAttributeForStaticField = new(
         id: UnnecessaryBindableFieldAttributeId,
@@ -52,7 +56,8 @@ public static class DiagnosticDescriptors
         messageFormat: "Since static fields cannot bind value, there is no need to assign the UITKBindableField attribute to static fields.",
         category: Category,
         defaultSeverity: DiagnosticSeverity.Warning,
-        isEnabledByDefault: true);
+        isEnabledByDefault: true,
+        helpLinkUri: GetHelpLink(UnnecessaryBindableFieldAttributeId));
 
     public static readonly DiagnosticDescriptor NoNeedToAssignUITKBindableFieldAttribute = new(
         id: UnnecessaryBindableFieldAttributeId,
@@ -60,7 +65,8 @@ public static class DiagnosticDescriptors
         messageFormat: "You do not need to assign a UITKBindableField attribute to a class that does not have any UITKDataSource attribute assigned.",
         category: Category,
         defaultSeverity: DiagnosticSeverity.Warning,
-        isEnabledByDefault: true);
+        isEnabledByDefault: true,
+        helpLinkUri: GetHelpLink(UnnecessaryBindableFieldAttributeId));
 
     public static readonly DiagnosticDescriptor InvalidInheritance = new(
         id: InvalidInheritanceId,
@@ -68,7 +74,8 @@ public static class DiagnosticDescriptors
         messageFormat: "The parent class '{0}' implemented INotifyBindablePropertyChanged must be given UITKDataSourceObject attribute.",
         category: Category,
         defaultSeverity: DiagnosticSeverity.Error,
-        isEnabledByDefault: true);
+        isEnabledByDefault: true,
+        helpLinkUri: GetHelpLink(InvalidInheritanceId));
 
     public static readonly DiagnosticDescriptor DontCreatePropertyAttributeShouldBeGiven = new(
         id: DontCreatePropertyAttributeShouldBeGivenId,
@@ -76,5 +83,8 @@ public static class DiagnosticDescriptors
         messageFormat: "If a field with UITKBindableField attribute is public or has SerializeField attribute, DontCreateProperty attribute should be given. By giving the DontCreateProperty attribute, the binding will go through the property rather than the field.",
         category: Category,
         defaultSeverity: DiagnosticSeverity.Warning,
-        isEnabledByDefault: true);
+        isEnabledByDefault: true,
+        helpLinkUri: GetHelpLink(DontCreatePropertyAttributeShouldBeGivenId));
+
+    internal static string GetHelpLink(string diagnosticId) => $"https://github.com/kyw-kyw/UIToolkitBinding/blob/main/doc/analyzers/{diagnosticId}.md";
 }
