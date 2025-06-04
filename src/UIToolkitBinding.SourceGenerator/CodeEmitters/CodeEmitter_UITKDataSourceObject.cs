@@ -51,7 +51,7 @@ partial {{parent.TypeDeclarationKeyword}} {{parent.ClassName}}
 """);
         }
         Buffer.AppendLine($$"""
-partial class {{context.ClassName}} : INotifyBindablePropertyChanged
+partial {{context.TypeDeclarationKeyword}} {{context.ClassName}} : INotifyBindablePropertyChanged
 {
 """);
         if (!context.IsDerivedUITKDataSourceObjectClass && !context.HasInterfaceImplemented)

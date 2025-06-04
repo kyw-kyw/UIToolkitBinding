@@ -14,6 +14,7 @@ internal record UITKDataSourceObjectContext
 {
     public required string Namespace { get; init; }
     internal EquatableArray<ParentDataOfNested> Parents { get; init; }
+    public required string TypeDeclarationKeyword { get; init; }
     public required string ClassName { get; init; }
     public EquatableArray<UITKBindableMemberContext> Members { get; init; }
     public bool IsDerivedUITKDataSourceObjectClass { get; init; }
@@ -61,6 +62,7 @@ internal record UITKDataSourceObjectContext
         {
             Namespace = ns,
             Parents = nestClassParents,
+            TypeDeclarationKeyword = GetTypeDeclarationKeyword(typeDeclaration),
             ClassName = className,
             Members = members.AsSpan(0, count).ToArray(),
             IsDerivedUITKDataSourceObjectClass = isderived,
@@ -112,17 +114,17 @@ internal record UITKDataSourceObjectContext
             nestClassParents = nestData.ToArray();
         }
         return true;
+    }
 
-        static string GetTypeDeclarationKeyword(TypeDeclarationSyntax typeDeclaration)
+    static string GetTypeDeclarationKeyword(TypeDeclarationSyntax typeDeclaration)
+    {
+        return typeDeclaration.Kind() switch
         {
-            return typeDeclaration.Kind() switch
-            {
-                SyntaxKind.RecordStructDeclaration => "record struct",
-                SyntaxKind.RecordDeclaration => "record",
-                SyntaxKind.StructDeclaration => "struct",
-                SyntaxKind.ClassDeclaration => "class",
-                _ => throw new NotSupportedException()
-            };
-        }
+            SyntaxKind.RecordStructDeclaration => "record struct",
+            SyntaxKind.RecordDeclaration => "record",
+            SyntaxKind.StructDeclaration => "struct",
+            SyntaxKind.ClassDeclaration => "class",
+            _ => throw new NotSupportedException()
+        };
     }
 }
