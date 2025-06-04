@@ -40,7 +40,8 @@ public sealed class UIToolkitBindingSourceGenerator : IIncrementalGenerator
         foreach (var dataSourceObjectContext in dataSourceObjectContexts)
         {
             var code = CodeEmitter_UITKDataSourceObject.Generate(dataSourceObjectContext);
-            AddSource(context, dataSourceObjectContext.ClassName, code);
+            var fileName = CodeEmitter_UITKDataSourceObject.GetFileName(dataSourceObjectContext);
+            AddSource(context, fileName, code);
         }
 
         CodeEmitter.Clear();

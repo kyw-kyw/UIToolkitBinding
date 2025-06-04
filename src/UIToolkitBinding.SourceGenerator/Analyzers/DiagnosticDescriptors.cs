@@ -7,7 +7,7 @@ public static class DiagnosticDescriptors
     const string Category = "UIToolkitBinding.SourceGenerator";
 
     public const string MustBePartialId = "UITKBIND001";
-    public const string NestNotAllowedId = "UITKBIND002";
+    public const string InvalidNestId = "UITKBIND002";
     public const string InvalidSetAccessorId = "UITKBIND003";
     public const string UnnecessaryDataSourceAttributeId = "UITKBIND004";
     public const string UnnecessaryBindableFieldAttributeId = "UITKBIND005";
@@ -22,10 +22,10 @@ public static class DiagnosticDescriptors
         defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true);
 
-    public static readonly DiagnosticDescriptor NestNotAllowed = new(
-        id: NestNotAllowedId,
-        title: "UITKDataSourceObject type must not be nested",
-        messageFormat: "UITKDataSource object '{0}' must be not nested",
+    public static readonly DiagnosticDescriptor InvalidNest = new(
+        id: InvalidNestId,
+        title: "The parent of nested UITKDataSource object type must be partial",
+        messageFormat: "The parent '{0}'of nested type '{1}' must be partial",
         category: Category,
         defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true);

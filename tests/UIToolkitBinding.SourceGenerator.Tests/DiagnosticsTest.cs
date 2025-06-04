@@ -28,7 +28,7 @@ public class Hoge
     }
 }
 """;
-        await VerifyAnalyzerDiagnostic(code, DiagnosticDescriptors.NestNotAllowedId, "Fuga");
+        await VerifyAnalyzerDiagnostic(code, DiagnosticDescriptors.InvalidNestId, "Fuga");
     }
 
     [Fact]

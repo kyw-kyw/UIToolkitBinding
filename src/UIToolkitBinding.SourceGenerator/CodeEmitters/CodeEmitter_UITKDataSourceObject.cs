@@ -4,6 +4,22 @@ namespace UIToolkitBinding.CodeEmitters;
 
 internal sealed class CodeEmitter_UITKDataSourceObject : CodeEmitter
 {
+    public static string GetFileName(UITKDataSourceObjectContext context)
+    {
+        TempBuffer.Clear();
+        if (context.Parents.Length > 0)
+        {
+            foreach (var parent in context.Parents)
+            {
+                TempBuffer.Append(parent.ClassName);
+                TempBuffer.Append('.');
+            }
+        }
+        TempBuffer.Append($"{context.ClassName}");
+        var result = TempBuffer.ToString();
+        return result;
+    }
+
     public static string Generate(UITKDataSourceObjectContext context)
     {
         Buffer.Clear();
@@ -24,6 +40,13 @@ using UnityEngine.UIElements;
         {
             Buffer.AppendLine($$"""
 namespace {{context.Namespace}}
+{
+""");
+        }
+        foreach (var parent in context.Parents)
+        {
+            Buffer.AppendLine($$"""
+partial {{parent.TypeDeclarationKeyword}} {{parent.ClassName}}
 {
 """);
         }
@@ -66,6 +89,12 @@ partial class {{context.ClassName}} : INotifyBindablePropertyChanged
     }
 }
 """);
+        foreach (var _ in context.Parents)
+        {
+            Buffer.AppendLine($$"""
+}
+""");
+        }
         if (!string.IsNullOrEmpty(context.Namespace))
         {
             Buffer.Append("""

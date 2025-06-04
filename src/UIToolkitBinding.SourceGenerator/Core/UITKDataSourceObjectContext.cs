@@ -4,9 +4,16 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace UIToolkitBinding.Core;
 
+internal record ParentDataOfNested
+{
+    public required string TypeDeclarationKeyword { get; init; }
+    public required string ClassName { get; init; }
+}
+
 internal record UITKDataSourceObjectContext
 {
     public required string Namespace { get; init; }
+    internal EquatableArray<ParentDataOfNested> Parents { get; init; }
     public required string ClassName { get; init; }
     public EquatableArray<UITKBindableMemberContext> Members { get; init; }
     public bool IsDerivedUITKDataSourceObjectClass { get; init; }
@@ -18,7 +25,7 @@ internal record UITKDataSourceObjectContext
 
         if (!typeDeclaration.Modifiers.Any(static x => x.IsKind(SyntaxKind.PartialKeyword))
             || typeDeclaration.Modifiers.Any(static x => x.IsKind(SyntaxKind.StaticKeyword))
-            || typeDeclaration.Parent is TypeDeclarationSyntax
+            || !IsValidNest(typeDeclaration, out var nestClassParents)
             || !IsValidInheritance(typeSymbol, out var isderived)) return null;
 
         string ns = string.Empty;
@@ -53,6 +60,7 @@ internal record UITKDataSourceObjectContext
         return new UITKDataSourceObjectContext()
         {
             Namespace = ns,
+            Parents = nestClassParents,
             ClassName = className,
             Members = members.AsSpan(0, count).ToArray(),
             IsDerivedUITKDataSourceObjectClass = isderived,
@@ -74,5 +82,47 @@ internal record UITKDataSourceObjectContext
             typeSymbol = baseType;
         }
         return true;
+    }
+
+    static bool IsValidNest(TypeDeclarationSyntax typeDeclaration, out ParentDataOfNested[] nestClassParents)
+    {
+        nestClassParents = [];
+        List<ParentDataOfNested> nestData = [];
+        while (typeDeclaration.Parent is { } parentDecl)
+        {
+            if (parentDecl is TypeDeclarationSyntax containerDecl)
+            {
+                if (!containerDecl.Modifiers.Any(static x => x.IsKind(SyntaxKind.PartialKeyword)))
+                {
+                    nestClassParents = [];
+                    return false;
+                }
+                nestData.Add(new ParentDataOfNested()
+                {
+                    TypeDeclarationKeyword = GetTypeDeclarationKeyword(containerDecl),
+                    ClassName = containerDecl.Identifier.ToFullString().Trim()
+                });
+                typeDeclaration = containerDecl;
+            }
+            else break;
+        }
+        if (nestData.Count > 0)
+        {
+            nestData.Reverse();
+            nestClassParents = nestData.ToArray();
+        }
+        return true;
+
+        static string GetTypeDeclarationKeyword(TypeDeclarationSyntax typeDeclaration)
+        {
+            return typeDeclaration.Kind() switch
+            {
+                SyntaxKind.RecordStructDeclaration => "record struct",
+                SyntaxKind.RecordDeclaration => "record",
+                SyntaxKind.StructDeclaration => "struct",
+                SyntaxKind.ClassDeclaration => "class",
+                _ => throw new NotSupportedException()
+            };
+        }
     }
 }

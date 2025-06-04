@@ -11,7 +11,7 @@ public sealed class UIToolkitBindingAnalyzer : DiagnosticAnalyzer
 {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(
             DiagnosticDescriptors.MustBePartial,
-            DiagnosticDescriptors.NestNotAllowed,
+            DiagnosticDescriptors.InvalidNest,
             DiagnosticDescriptors.InvalidSetAccessor,
             DiagnosticDescriptors.UnnecessaryDataSourceAttribute,
             DiagnosticDescriptors.UnnecessaryBindableFieldAttribute,
@@ -42,9 +42,9 @@ public sealed class UIToolkitBindingAnalyzer : DiagnosticAnalyzer
         if ((declaredSymbol.TypeKind is TypeKind.Class or TypeKind.Struct) &&
             declaredSymbol.GetAttributes().Any(x => x.AttributeClass?.ToDisplayString() == AttributeConstants.UITKDataSourceObjectAttribute))
         {
-            if (typeDeclaration.Parent is TypeDeclarationSyntax)
+            if (!IsValidNest(typeDeclaration, out var errorSourceDecl) && errorSourceDecl is { })
             {
-                context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.NestNotAllowed, typeDeclaration.Identifier.GetLocation(), typeDeclaration.Identifier.ToFullString().Trim()));
+                context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.InvalidNest, typeDeclaration.Identifier.GetLocation(), errorSourceDecl.Identifier.ToFullString().Trim(), typeDeclaration.Identifier.ToFullString().Trim()));
                 return;
             }
             if (typeDeclaration.Modifiers.Any(x => x.IsKind(SyntaxKind.StaticKeyword)))
@@ -136,6 +136,25 @@ public sealed class UIToolkitBindingAnalyzer : DiagnosticAnalyzer
                 return false;
             }
             typeSymbol = baseTypeSymbol;
+        }
+        return true;
+    }
+
+    static bool IsValidNest(TypeDeclarationSyntax typeDeclaration, out TypeDeclarationSyntax? errorSourceDecl)
+    {
+        errorSourceDecl = null;
+        while (typeDeclaration.Parent is { } parentDecl)
+        {
+            if (parentDecl is TypeDeclarationSyntax containerDecl)
+            {
+                if (!containerDecl.Modifiers.Any(static x => x.IsKind(SyntaxKind.PartialKeyword)))
+                {
+                    errorSourceDecl = containerDecl;
+                    return false;
+                }
+                typeDeclaration = containerDecl;
+            }
+            else break;
         }
         return true;
     }
