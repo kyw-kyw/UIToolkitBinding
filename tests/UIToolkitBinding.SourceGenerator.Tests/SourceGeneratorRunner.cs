@@ -4,12 +4,18 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using UIToolkitBinding.Analyzers;
 
 namespace UIToolkitBinding.SourceGenerator.Tests;
 
 internal static class SourceGeneratorRunner
 {
     static Compilation baseCompilation = default!;
+    public static ImmutableArray<DiagnosticAnalyzer> Analyzers { get; } =
+    [
+        new UITKDataSourceObjectAnalyzer(),
+        new NoUITKDataSourceObjectAnalyzer()
+    ];
 
     [ModuleInitializer]
     public static void InitializeCompilation()

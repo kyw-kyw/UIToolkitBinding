@@ -65,12 +65,20 @@ public partial class Hoge
 }
 """;
         await VerifyAnalyzerDiagnostic(code, DiagnosticDescriptors.UnnecessaryBindableFieldAttributeId, "UITKBindableField");
+
+        var code2 = """
+public partial class Hoge
+{
+    [UITKBindableField] int foo;
+}
+""";
+        await VerifyAnalyzerDiagnostic(code2, DiagnosticDescriptors.UnnecessaryBindableFieldAttributeId, "UITKBindableField");
     }
 
     static async Task VerifyAnalyzerDiagnostic(string code, string id, string diagnosticsCodeSpan = null!)
     {
         var (compilation, diagnostics) = SourceGeneratorRunner.RunGenerator(code);
-        var compilationWithAnalyzers = compilation.WithAnalyzers([new UIToolkitBindingAnalyzer()]);
+        var compilationWithAnalyzers = compilation.WithAnalyzers(SourceGeneratorRunner.Analyzers);
 
         diagnostics = diagnostics.AddRange(await compilationWithAnalyzers.GetAnalyzerDiagnosticsAsync());
         Assert.Single(diagnostics);

@@ -7,14 +7,14 @@ using System.Collections.Immutable;
 namespace UIToolkitBinding.Analyzers;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class UIToolkitBindingAnalyzer : DiagnosticAnalyzer
+public sealed class UITKDataSourceObjectAnalyzer : DiagnosticAnalyzer
 {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(
             DiagnosticDescriptors.MustBePartial,
             DiagnosticDescriptors.InvalidNest,
             DiagnosticDescriptors.InvalidSetAccessor,
             DiagnosticDescriptors.UnnecessaryDataSourceAttribute,
-            DiagnosticDescriptors.UnnecessaryBindableFieldAttribute,
+            DiagnosticDescriptors.NoNeedToAssignUITKBindableFieldAttributeForStaticField,
             DiagnosticDescriptors.InvalidInheritance,
             DiagnosticDescriptors.DontCreatePropertyAttributeShouldBeGiven);
 
@@ -87,7 +87,7 @@ public sealed class UIToolkitBindingAnalyzer : DiagnosticAnalyzer
         if (fieldSymbol.IsStatic && bindableFieldAttribute.ApplicationSyntaxReference is not null)
         {
             var location = Location.Create(semanticModel.SyntaxTree, bindableFieldAttribute.ApplicationSyntaxReference.Span);
-            context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.UnnecessaryBindableFieldAttribute, location, fieldSymbol.Name));
+            context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.NoNeedToAssignUITKBindableFieldAttributeForStaticField, location));
             return;
         }
 

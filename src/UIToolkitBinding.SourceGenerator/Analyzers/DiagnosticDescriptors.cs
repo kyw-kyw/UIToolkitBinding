@@ -46,10 +46,18 @@ public static class DiagnosticDescriptors
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true);
 
-    public static readonly DiagnosticDescriptor UnnecessaryBindableFieldAttribute = new(
+    public static readonly DiagnosticDescriptor NoNeedToAssignUITKBindableFieldAttributeForStaticField = new(
         id: UnnecessaryBindableFieldAttributeId,
-        title: "No need to assign the UITKBindableField attribute to a static member",
+        title: "No need to assign the UITKBindableField attribute.",
         messageFormat: "Since static fields cannot bind value, there is no need to assign the UITKBindableField attribute to static fields.",
+        category: Category,
+        defaultSeverity: DiagnosticSeverity.Warning,
+        isEnabledByDefault: true);
+
+    public static readonly DiagnosticDescriptor NoNeedToAssignUITKBindableFieldAttribute = new(
+        id: UnnecessaryBindableFieldAttributeId,
+        title: "No need to assign the UITKBindableField attribute.",
+        messageFormat: "You do not need to assign a UITKBindableField attribute to a class that does not have any UITKDataSource attribute assigned.",
         category: Category,
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true);
