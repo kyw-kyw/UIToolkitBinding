@@ -56,7 +56,7 @@ partial {{context.TypeDeclarationKeyword}} {{context.ClassName}} : INotifyBindab
 """);
         if (!context.IsDerivedUITKDataSourceObjectClass && !context.HasInterfaceImplemented)
         {
-            Buffer.AppendLine("    public event EventHandler<BindablePropertyChangedEventArgs> propertyChanged;");
+            Buffer.AppendLine("    public event EventHandler<BindablePropertyChangedEventArgs>? propertyChanged;");
             Buffer.AppendLine();
         }
         Buffer.AppendLine(AppendProperties(context));
