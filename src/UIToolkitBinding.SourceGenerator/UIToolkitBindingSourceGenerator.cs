@@ -20,6 +20,7 @@ public sealed class UIToolkitBindingSourceGenerator : IIncrementalGenerator
             .Select(static (xs, _) =>
             {
                 var list = new List<UITKDataSourceObjectContext>(xs.Length);
+                var eventArgsPropertyNames = new SortedSet<string>(StringComparer.Ordinal);
                 foreach (var x in xs)
                 {
                     var typeDecl = x.TargetNode as TypeDeclarationSyntax;
@@ -28,16 +29,26 @@ public sealed class UIToolkitBindingSourceGenerator : IIncrementalGenerator
                     if (context != null) list.Add(context);
                 }
                 list.Sort(static (x, y) => string.Compare(x.ClassName, y.ClassName, StringComparison.Ordinal));
-                return new EquatableArray<UITKDataSourceObjectContext>(list.ToArray());
+                foreach (var property in list.SelectMany(x => x.Members))
+                {
+                    eventArgsPropertyNames.Add(property.PropertyName);
+                }
+                return new GeneratedContext()
+                {
+                    UITKDataSourceObjectContexts = new EquatableArray<UITKDataSourceObjectContext>(list.ToArray()),
+                    EventArgsCachePropertyNames = eventArgsPropertyNames.ToArray()
+                };
             })
             .WithTrackingName("UIToolkitBindingSourceGenerator.SyntaxProvider.1_CollectAndSelect");
 
         context.RegisterSourceOutput(source, Emit);
     }
 
-    static void Emit(SourceProductionContext context, EquatableArray<UITKDataSourceObjectContext> dataSourceObjectContexts)
+    static void Emit(SourceProductionContext context, GeneratedContext generatedContext)
     {
-        foreach (var dataSourceObjectContext in dataSourceObjectContexts)
+        AddSource(context, "GeneratedEventArgsCache", CodeEmitter_GeneratedEventArgsCache.Generated(generatedContext.EventArgsCachePropertyNames));
+
+        foreach (var dataSourceObjectContext in generatedContext.UITKDataSourceObjectContexts)
         {
             var code = CodeEmitter_UITKDataSourceObject.Generate(dataSourceObjectContext);
             var fileName = CodeEmitter_UITKDataSourceObject.GetFileName(dataSourceObjectContext);

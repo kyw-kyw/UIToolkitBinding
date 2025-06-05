@@ -80,13 +80,7 @@ partial {{context.TypeDeclarationKeyword}} {{context.ClassName}} : INotifyBindab
 """);
         }
         Buffer.AppendLine(AppendOnPropertyChangeMethods(context));
-        Buffer.Append(new string(' ', 4));
-        if (context.IsDerivedUITKDataSourceObjectClass) Buffer.Append("new ");
-        Buffer.AppendLine("internal static partial class EventArgsCache");
         Buffer.AppendLine($$"""
-    {
-{{AppendEventArgsCacheProperties(context)}}
-    }
 }
 """);
         foreach (var _ in context.Parents)
@@ -146,8 +140,8 @@ partial {{context.TypeDeclarationKeyword}} {{context.ClassName}} : INotifyBindab
 
         static string NotifyPropertyChanged(UITKBindableMemberContext member, bool isInherited)
         {
-            if (isInherited) return $"NotifyPropertyChanged(EventArgsCache.{member.PropertyName}Changed);";
-            return $"propertyChanged?.Invoke(this, EventArgsCache.{member.PropertyName}Changed);";
+            if (isInherited) return $"NotifyPropertyChanged(GeneratedEventArgsCache.{member.PropertyName});";
+            return $"propertyChanged?.Invoke(this, GeneratedEventArgsCache.{member.PropertyName});";
         }
     }
     static string AppendOnPropertyChangeMethods(UITKDataSourceObjectContext context)
@@ -162,20 +156,6 @@ partial {{context.TypeDeclarationKeyword}} {{context.ClassName}} : INotifyBindab
     partial void On{member.PropertyName}Changed();
     partial void On{member.PropertyName}Changed({member.Type} newValue);
     partial void On{member.PropertyName}Changed({member.Type} oldValue, {member.Type} newValue);
-""");
-        }
-        var result = TempBuffer.ToString();
-        TempBuffer.Clear();
-        return result;
-    }
-
-    static string AppendEventArgsCacheProperties(UITKDataSourceObjectContext context)
-    {
-        TempBuffer.Clear();
-        foreach (var member in context.Members)
-        {
-            TempBuffer.AppendLine($$"""
-        internal static readonly BindablePropertyChangedEventArgs {{member.PropertyName}}Changed = new(nameof({{member.PropertyName}}));
 """);
         }
         var result = TempBuffer.ToString();
