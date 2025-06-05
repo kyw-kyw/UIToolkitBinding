@@ -75,6 +75,24 @@ public partial class Hoge
         await VerifyAnalyzerDiagnostic(code2, DiagnosticDescriptors.UnnecessaryBindableFieldAttributeId, "UITKBindableField");
     }
 
+    [Fact]
+    public async Task Warning_UITKBIND008()
+    {
+        var code = """
+[UITKDataSourceObject]
+public partial class Hoge
+{
+    [UITKBindableField] int foo;
+
+    public void Test()
+    {
+        foo = 2;
+    }
+}
+""";
+        await VerifyAnalyzerDiagnostic(code, DiagnosticDescriptors.BindableFieldReferencedDirectlyId, "foo");
+    }
+
     static async Task VerifyAnalyzerDiagnostic(string code, string id, string diagnosticsCodeSpan = null!)
     {
         var (compilation, diagnostics) = SourceGeneratorRunner.RunGenerator(code);

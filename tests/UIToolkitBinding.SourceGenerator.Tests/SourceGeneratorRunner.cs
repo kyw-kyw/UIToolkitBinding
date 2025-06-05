@@ -14,7 +14,8 @@ internal static class SourceGeneratorRunner
     public static ImmutableArray<DiagnosticAnalyzer> Analyzers { get; } =
     [
         new UITKDataSourceObjectAnalyzer(),
-        new NoUITKDataSourceObjectAnalyzer()
+        new NoUITKDataSourceObjectAnalyzer(),
+        new UITKBindableFieldRefenrecedDirectlyAnalyzer(),
     ];
 
     [ModuleInitializer]

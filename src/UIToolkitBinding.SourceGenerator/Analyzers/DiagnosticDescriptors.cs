@@ -13,6 +13,7 @@ public static class DiagnosticDescriptors
     public const string UnnecessaryBindableFieldAttributeId = "UITKBIND005";
     public const string InvalidInheritanceId = "UITKBIND006";
     public const string DontCreatePropertyAttributeShouldBeGivenId = "UITKBIND007";
+    public const string BindableFieldReferencedDirectlyId = "UITKBIND008";
 
     public static readonly DiagnosticDescriptor MustBePartial = new(
         id: MustBePartialId,
@@ -85,6 +86,15 @@ public static class DiagnosticDescriptors
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         helpLinkUri: GetHelpLink(DontCreatePropertyAttributeShouldBeGivenId));
+
+    public static readonly DiagnosticDescriptor BindableFieldReferencedDirectly = new(
+        id: BindableFieldReferencedDirectlyId,
+        title: "Direct field reference to [UITKBindableField] backing field",
+        messageFormat: "The field '{0}' is annotated with [UITKBindableField] and should not be directly referenced (use the generated property instead)",
+        category: Category,
+        defaultSeverity: DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        helpLinkUri: GetHelpLink(BindableFieldReferencedDirectlyId));
 
     internal static string GetHelpLink(string diagnosticId) => $"https://github.com/kyw-kyw/UIToolkitBinding/blob/main/doc/analyzers/{diagnosticId}.md";
 }

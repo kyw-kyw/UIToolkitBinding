@@ -70,7 +70,7 @@ internal sealed record UITKBindableFieldContext : UITKBindableMemberContext
         return false;
     }
 
-    static string ToPropertyName(string fieldName)
+    internal static string ToPropertyName(string fieldName)
     {
         if (string.IsNullOrEmpty(fieldName)) return fieldName;
 
