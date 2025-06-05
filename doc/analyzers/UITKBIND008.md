@@ -1,6 +1,6 @@
 # UITKBIND008-Warning Direct field reference to [UITKBindableField] backing field
 
-
+Fields annotated with `[UITKBindableField]` should not be referenced directly because they cannot notify change value.
 
 The following sample generates UITKBIND008:
 

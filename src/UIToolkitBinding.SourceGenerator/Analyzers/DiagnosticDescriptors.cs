@@ -90,7 +90,7 @@ public static class DiagnosticDescriptors
     public static readonly DiagnosticDescriptor BindableFieldReferencedDirectly = new(
         id: BindableFieldReferencedDirectlyId,
         title: "Direct field reference to [UITKBindableField] backing field",
-        messageFormat: "The field '{0}' is annotated with [UITKBindableField] and should not be directly referenced (use the generated property instead)",
+        messageFormat: "The field '{0}' annotated with [UITKBindableField] should not be referenced directly because they cannot notify change value. (use the generated property instead)",
         category: Category,
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
