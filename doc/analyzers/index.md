@@ -10,3 +10,4 @@ ID | Title
 [UITKBIND006](UITKBIND006.md) | Invalid Inheritance
 [UITKBIND007](UITKBIND007.md) | DontCreatePropertyAttribute should be given
 [UITKBIND008](UITKBIND008.md) | Direct field reference to [UITKBindableField] backing field
+[UITKBIND009](UITKBIND009.md) | Field conflicts with generated property

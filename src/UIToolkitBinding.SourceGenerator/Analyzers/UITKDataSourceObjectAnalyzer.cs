@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
+using UIToolkitBinding.Core;
 
 namespace UIToolkitBinding.Analyzers;
 
@@ -16,12 +17,13 @@ public sealed class UITKDataSourceObjectAnalyzer : DiagnosticAnalyzer
             DiagnosticDescriptors.UnnecessaryDataSourceAttribute,
             DiagnosticDescriptors.NoNeedToAssignUITKBindableFieldAttributeForStaticField,
             DiagnosticDescriptors.InvalidInheritance,
-            DiagnosticDescriptors.DontCreatePropertyAttributeShouldBeGiven);
+            DiagnosticDescriptors.DontCreatePropertyAttributeShouldBeGiven,
+            DiagnosticDescriptors.FieldConflictsWithGeneratedProperty);
 
     public override void Initialize(AnalysisContext context)
     {
         context.EnableConcurrentExecution();
-        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
         context.RegisterCompilationStartAction(context =>
         {
             if (context.Compilation.GetTypeByMetadataName(AttributeConstants.UITKDataSourceObjectAttribute) is not null)
@@ -88,6 +90,14 @@ public sealed class UITKDataSourceObjectAnalyzer : DiagnosticAnalyzer
         {
             var location = Location.Create(semanticModel.SyntaxTree, bindableFieldAttribute.ApplicationSyntaxReference.Span);
             context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.NoNeedToAssignUITKBindableFieldAttributeForStaticField, location));
+            return;
+        }
+
+        var fieldName = fieldSymbol.Name;
+        var propertyName = UITKBindableFieldContext.ToPropertyName(fieldName);
+        if (fieldName == propertyName)
+        {
+            context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.FieldConflictsWithGeneratedProperty, fieldSymbol.Locations[0], fieldName));
             return;
         }
 

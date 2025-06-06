@@ -23,6 +23,8 @@ internal sealed record UITKBindableFieldContext : UITKBindableMemberContext
         var fieldName = fieldSymbol.Name;
         var propertyName = ToPropertyName(fieldName);
 
+        if (fieldName == propertyName) return null;
+
         var args = bindableFieldAttribute.ConstructorArguments;
         var declaredAccessibility = DeclaredAccessibility.Public;
         var setterAccessibility = SetterAccessibility.Public;

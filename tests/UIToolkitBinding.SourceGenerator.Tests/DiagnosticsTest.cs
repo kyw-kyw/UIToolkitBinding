@@ -93,6 +93,19 @@ public partial class Hoge
         await VerifyAnalyzerDiagnostic(code, DiagnosticDescriptors.BindableFieldReferencedDirectlyId, "foo");
     }
 
+    [Fact]
+    public async Task Error_UITKBIND009()
+    {
+        var code = """
+[UITKDataSourceObject]
+public partial class Hoge
+{
+    [UITKBindableField] int Value;
+}
+""";
+        await VerifyAnalyzerDiagnostic(code, DiagnosticDescriptors.FieldConflictsWithGeneratedPropertyId, "Value");
+    }
+
     static async Task VerifyAnalyzerDiagnostic(string code, string id, string diagnosticsCodeSpan = null!)
     {
         var (compilation, diagnostics) = SourceGeneratorRunner.RunGenerator(code);

@@ -14,6 +14,7 @@ public static class DiagnosticDescriptors
     public const string InvalidInheritanceId = "UITKBIND006";
     public const string DontCreatePropertyAttributeShouldBeGivenId = "UITKBIND007";
     public const string BindableFieldReferencedDirectlyId = "UITKBIND008";
+    public const string FieldConflictsWithGeneratedPropertyId = "UITKBIND009";
 
     public static readonly DiagnosticDescriptor MustBePartial = new(
         id: MustBePartialId,
@@ -95,6 +96,15 @@ public static class DiagnosticDescriptors
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         helpLinkUri: GetHelpLink(BindableFieldReferencedDirectlyId));
+
+    public static readonly DiagnosticDescriptor FieldConflictsWithGeneratedProperty = new(
+        id: FieldConflictsWithGeneratedPropertyId,
+        title: "Field conflicts with generated property",
+        messageFormat: "The field '{0}' conflicts with generated property",
+        category: Category,
+        defaultSeverity: DiagnosticSeverity.Error,
+        isEnabledByDefault: true,
+        helpLinkUri: GetHelpLink(FieldConflictsWithGeneratedPropertyId));
 
     internal static string GetHelpLink(string diagnosticId) => $"https://github.com/kyw-kyw/UIToolkitBinding/blob/main/doc/analyzers/{diagnosticId}.md";
 }
