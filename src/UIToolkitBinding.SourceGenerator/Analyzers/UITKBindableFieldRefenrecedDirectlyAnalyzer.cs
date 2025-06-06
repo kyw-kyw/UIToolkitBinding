@@ -1,4 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using System.Collections.Immutable;
@@ -33,11 +35,25 @@ public sealed class UITKBindableFieldRefenrecedDirectlyAnalyzer : DiagnosticAnal
         if (context.Operation is not IFieldReferenceOperation
             {
                 Field: IFieldSymbol { IsStatic: false, IsConst: false, IsImplicitlyDeclared: false, ContainingType: INamedTypeSymbol } fieldSymbol,
-                Instance.Type: ITypeSymbol typeSymbol
+                Instance.Type: ITypeSymbol typeSymbol,
+                Syntax: SyntaxNode syntaxNode,
             }) return;
 
         if (context.ContainingSymbol is IMethodSymbol { MethodKind: MethodKind.Constructor, ContainingType: INamedTypeSymbol instanceType }
         && SymbolEqualityComparer.Default.Equals(instanceType, typeSymbol)) return;
+
+        if (syntaxNode.Parent.IsKind(SyntaxKind.EqualsValueClause)) return;
+        if (syntaxNode.Parent is ArgumentSyntax argumentSyntax)
+        {
+            if (argumentSyntax.RefKindKeyword.IsKind(SyntaxKind.None)
+                || argumentSyntax.RefKindKeyword.IsKind(SyntaxKind.InKeyword)) return;
+
+            // Admit SetProperty<T>(ref field, T value, in BindablePropertyChangedEventArgs eventArgs)
+            if (argumentSyntax.Parent is ArgumentListSyntax argumentListSyntax
+                && argumentListSyntax.Parent is InvocationExpressionSyntax invocationExpressionSyntax
+                && invocationExpressionSyntax.Expression.ToFullString().Trim() == "SetProperty"
+                && argumentListSyntax.Arguments.Count == 3) return;
+        }
 
         if (fieldSymbol.ContainsAttribute(AttributeConstants.UITKBindableFieldAttribute))
         {
