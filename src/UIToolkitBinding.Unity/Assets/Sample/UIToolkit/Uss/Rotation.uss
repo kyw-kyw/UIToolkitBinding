@@ -1,0 +1,25 @@
+﻿.horizon-container {
+    flex-direction: row;
+}
+
+.rotation__slider-container{
+    margin-left: 50px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.rotation__slider {
+    width: 750px;
+}
+
+.rotation__slider-label {
+    color: rgb(200, 200, 200);
+    -unity-text-align: middle-left;
+    font-size: 28px;
+}
+
+.rotation__slider-value-label {
+    color: rgb(200, 200, 200);
+    -unity-text-align: middle-left;
+    font-size: 28px;
+}
