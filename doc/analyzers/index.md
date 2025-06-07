@@ -11,3 +11,4 @@ ID | Title
 [UITKBIND007](UITKBIND007.md) | DontCreatePropertyAttribute should be given
 [UITKBIND008](UITKBIND008.md) | Direct field reference to [UITKBindableField] backing field
 [UITKBIND009](UITKBIND009.md) | Field conflicts with generated property
+[UITKBIND010](UITKBIND010.md) | Conflicts between generated properties

@@ -15,6 +15,7 @@ public static class DiagnosticDescriptors
     public const string DontCreatePropertyAttributeShouldBeGivenId = "UITKBIND007";
     public const string BindableFieldReferencedDirectlyId = "UITKBIND008";
     public const string FieldConflictsWithGeneratedPropertyId = "UITKBIND009";
+    public const string ConflictsBetweenGeneratedPropertiesId = "UITKBIND010";
 
     public static readonly DiagnosticDescriptor MustBePartial = new(
         id: MustBePartialId,
@@ -105,6 +106,15 @@ public static class DiagnosticDescriptors
         defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true,
         helpLinkUri: GetHelpLink(FieldConflictsWithGeneratedPropertyId));
+
+    public static readonly DiagnosticDescriptor ConflictsBetweenGeneratedProperties = new(
+        id: ConflictsBetweenGeneratedPropertiesId,
+        title: "Conflicts between generated properties",
+        messageFormat: "The property '{0}' is already defined by the field '{1}'.",
+        category: Category,
+        defaultSeverity: DiagnosticSeverity.Error,
+        isEnabledByDefault: true,
+        helpLinkUri: GetHelpLink(ConflictsBetweenGeneratedPropertiesId));
 
     internal static string GetHelpLink(string diagnosticId) => $"https://github.com/kyw-kyw/UIToolkitBinding/blob/main/doc/analyzers/{diagnosticId}.md";
 }

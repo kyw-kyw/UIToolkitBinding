@@ -18,7 +18,8 @@ public sealed class UITKDataSourceObjectAnalyzer : DiagnosticAnalyzer
             DiagnosticDescriptors.NoNeedToAssignUITKBindableFieldAttributeForStaticField,
             DiagnosticDescriptors.InvalidInheritance,
             DiagnosticDescriptors.DontCreatePropertyAttributeShouldBeGiven,
-            DiagnosticDescriptors.FieldConflictsWithGeneratedProperty);
+            DiagnosticDescriptors.FieldConflictsWithGeneratedProperty,
+            DiagnosticDescriptors.ConflictsBetweenGeneratedProperties);
 
     public override void Initialize(AnalysisContext context)
     {
@@ -70,27 +71,37 @@ public sealed class UITKDataSourceObjectAnalyzer : DiagnosticAnalyzer
 
     static void AnalyzeMembers(SyntaxNodeAnalysisContext context, SemanticModel semanticModel, INamedTypeSymbol typeSymbol)
     {
+        var propertyNameToFieldName = new Dictionary<string, string>();
         foreach (var member in typeSymbol.GetMembers())
         {
             if (member is IFieldSymbol fieldSymbol)
             {
-                AnalyzeField(context, semanticModel, fieldSymbol);
+                if (AnalyzeField(context, semanticModel, fieldSymbol))
+                {
+                    var propertyName = UITKBindableFieldContext.ToPropertyName(fieldSymbol.Name);
+                    if (propertyNameToFieldName.ContainsKey(propertyName))
+                    {
+                        context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.ConflictsBetweenGeneratedProperties, fieldSymbol.Locations[0], propertyName, propertyNameToFieldName[propertyName]));
+                        continue;
+                    }
+                    propertyNameToFieldName.Add(propertyName, fieldSymbol.Name);
+                }
             }
         }
     }
 
-    static void AnalyzeField(SyntaxNodeAnalysisContext context, SemanticModel semanticModel, IFieldSymbol fieldSymbol)
+    static bool AnalyzeField(SyntaxNodeAnalysisContext context, SemanticModel semanticModel, IFieldSymbol fieldSymbol)
     {
         var bindableFieldAttribute = fieldSymbol.GetAttributes()
                     .FirstOrDefault(x => x.AttributeClass?.ToDisplayString() == AttributeConstants.UITKBindableFieldAttribute);
 
-        if (bindableFieldAttribute == null) return;
+        if (bindableFieldAttribute == null) return false;
 
         if (fieldSymbol.IsStatic && bindableFieldAttribute.ApplicationSyntaxReference is not null)
         {
             var location = Location.Create(semanticModel.SyntaxTree, bindableFieldAttribute.ApplicationSyntaxReference.Span);
             context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.NoNeedToAssignUITKBindableFieldAttributeForStaticField, location));
-            return;
+            return false;
         }
 
         var fieldName = fieldSymbol.Name;
@@ -98,7 +109,7 @@ public sealed class UITKDataSourceObjectAnalyzer : DiagnosticAnalyzer
         if (fieldName == propertyName)
         {
             context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.FieldConflictsWithGeneratedProperty, fieldSymbol.Locations[0], fieldName));
-            return;
+            return false;
         }
 
         if (bindableFieldAttribute.ConstructorArguments.Length > 0)
@@ -121,6 +132,7 @@ public sealed class UITKDataSourceObjectAnalyzer : DiagnosticAnalyzer
             {
                 var location = Location.Create(semanticModel.SyntaxTree, bindableFieldAttribute.ApplicationSyntaxReference.Span);
                 context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.InvalidSetAccessor, location, declaredAccessibility, setterAccessibility));
+                return false;
             }
         }
 
@@ -131,7 +143,9 @@ public sealed class UITKDataSourceObjectAnalyzer : DiagnosticAnalyzer
             || (fieldSymbol.DeclaredAccessibility == Accessibility.Public && dontCreateProperty == null))
         {
             context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.DontCreatePropertyAttributeShouldBeGiven, fieldSymbol.Locations[0]));
+            return false;
         }
+        return true;
     }
 
     static bool IsValidInheritance(INamedTypeSymbol typeSymbol, out INamedTypeSymbol? errorSourceType)

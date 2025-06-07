@@ -41,13 +41,18 @@ internal record UITKDataSourceObjectContext
 
         int count = 0;
         var members = new UITKBindableMemberContext[typeSymbol.GetMembers().Length];
+        var propertyNames = new HashSet<string>();
         bool hasInterfaceImplemented = false;
         foreach (var member in typeSymbol.GetMembers())
         {
             if (member is IFieldSymbol fieldSymbol)
             {
                 var memberContext = UITKBindableFieldContext.Create(fieldSymbol);
-                if (memberContext != null) members[count++] = memberContext;
+                if (memberContext != null && !propertyNames.Contains(memberContext.PropertyName))
+                {
+                    members[count++] = memberContext;
+                    propertyNames.Add(memberContext.PropertyName);
+                }
             }
             if (member is IEventSymbol eventSymbol)
             {
