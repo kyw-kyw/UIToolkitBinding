@@ -3,29 +3,29 @@
 [![license](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 ![](https://img.shields.io/badge/Unity-6.0-green.svg)
 
-[日本語版READMEはこちら](README_JA.md)
+[English README is here](README.md)
 
-C# Source Generator for UI Toolkit that will help greatly reduce boilerplate when implement ```INotifyBindablePropertyChanged```.
+```INotifyBindablePropertyChanged```を実装するときに定型文を大幅に削減するのに役立つ UI ツールキット用の C# ソース ジェネレーターです。
 
-## Setup
+## セットアップ
 
-### Requirements
+### 要件
 
-* Unity6.0 or higher
+* Unity6.0 以上
 
-### Installs
+### インストール
 
 To install the software, follow the steps below.
 
-1. Open Package Manager from Window > Package Manager
-2. Click on the "+" button > Add package from git URL
-3. Enter the following URL:
+1. Window > Package Manager を選択
+2. 「+」ボタン > Add package from git URL を選択
+3. 以下の順番に入力してインストール
 
 ```
 https://github.com/kyw-kyw/UIToolkitBinding.git?path=src/UIToolkitBinding.UnityPackage
 ```
 
-Or open Packages/manifest.json and add the following to the dependencies block:
+あるいはPackages/manifest.jsonを開き、dependenciesブロックに以下を追記
 
 ```json
 {
@@ -35,34 +35,35 @@ Or open Packages/manifest.json and add the following to the dependencies block:
 }
 ```
 
-## Basic Usage
+## 使い方
 
-Original source (manually written):
+オリジナルコード:
 
 ```cs
 using UIToolkitBinding;
 
 namespace Sample
 {
-    // This attribute allows UIToolkitBinding's source generator to recognize.
-    // partial keyword must be required.
+    // この属性によって、ソースジェネレーターに認識させます。
+    // partialキーワードが必須です。
     [UITKDataSourceObject]
     public partial class Counter
     {
         /*
-        Access modifiers for generated properties can be specified by DeclaredAccessibility and SetterAccessibility.
+        生成されるアクセス修飾子は DeclaredAccessibility、SetterAccessibilityによって指定可能です
 
-        The generated properties will automatically use the UpperCamelCase format for their names, which will be derived from the field names.
-        The generator can also recognize fields using either _lowerCamel or m_lowerCamel naming scheme. (_count -> Count / m_count -> Count)
-        Otherwise, the first character in the source field name will be converted to uppercase
+        生成されるプロパティの名前には、フィールド名から派生した UpperCamelCase 形式が自動的に使用されます。
+        ソースジェネレーターは、_lowerCamel または m_lowerCamel 命名規則を使用したフィールドも認識できます。(_count -> Count / m_count -> Count)
+        それ以外の場合、ソースフィールド名の最初の文字は大文字に変換されます。
         */
         [UITKBindableField]
         private int count;
     }
 }
+
 ```
 
-Generated source:
+生成されるコード:
 
 ```cs
 using System;
