@@ -76,6 +76,30 @@ partial {{context.TypeDeclarationKeyword}} {{context.ClassName}} : INotifyBindab
         return true;
     }
 
+    protected bool SetProperty<T>(T oldValue, in T newValue, Action<T> callback, in BindablePropertyChangedEventArgs eventArgs)
+    {
+        if (callback == null) throw new ArgumentNullException(nameof(callback));
+
+        if (global::System.Collections.Generic.EqualityComparer<T>.Default.Equals(oldValue, newValue)) return false;
+
+        callback(newValue);
+        propertyChanged?.Invoke(this, eventArgs);
+        return true;
+    }
+
+    protected bool SetProperty<TModel, T>(T oldValue, in T newValue, TModel model, Action<TModel, T> callback, in BindablePropertyChangedEventArgs eventArgs)
+        where TModel : class
+    {
+        if (model == null) throw new ArgumentNullException(nameof(model));
+        if (callback == null) throw new ArgumentNullException(nameof(callback));
+
+        if (global::System.Collections.Generic.EqualityComparer<T>.Default.Equals(oldValue, newValue)) return false;
+
+        callback(model, newValue);
+        propertyChanged?.Invoke(this, eventArgs);
+        return true;
+    }
+
 """);
         }
         Buffer.AppendLine(AppendOnPropertyChangeMethods(context));
