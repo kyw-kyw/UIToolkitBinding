@@ -13,6 +13,7 @@ internal record ParentDataOfNested
 internal record UITKDataSourceObjectContext
 {
     public required string Namespace { get; init; }
+    public EquatableArray<string> Using { get; init; }
     internal EquatableArray<ParentDataOfNested> Parents { get; init; }
     public required string TypeDeclarationKeyword { get; init; }
     public required string ClassName { get; init; }
@@ -29,15 +30,23 @@ internal record UITKDataSourceObjectContext
             || !IsValidNest(typeDeclaration, out var nestClassParents)
             || !IsValidInheritance(typeSymbol, out var isderived)) return null;
 
-        string ns = string.Empty;
-        if (typeDeclaration.Parent is NamespaceDeclarationSyntax nsDeclaration)
-        {
-            ns = nsDeclaration.Name.ToFullString();
-        }
-        else if (typeDeclaration.Parent is FileScopedNamespaceDeclarationSyntax fileScopedNamespaceDeclaration)
-        {
-            ns = fileScopedNamespaceDeclaration.Name.ToFullString();
-        }
+        var root = typeDeclaration.SyntaxTree.GetRoot();
+
+        var ns = GetNamespace(typeDeclaration);
+
+        var usingNs = root.DescendantNodes().OfType<NamespaceDeclarationSyntax>()
+                .Select(x => "using " + x.Name.ToFullString().Trim() + ";")
+                .ToArray();
+
+        var usingStrings = root.DescendantNodes()
+                .OfType<UsingDirectiveSyntax>()
+                .Select(x => x.ToFullString().Trim())
+                .Concat(["using System", "using System.Collections.Generic", "using UIToolkitBinding", "using Unity.Properties", "using UnityEngine", "using UnityEngine.UIElements"])
+                .Concat(usingNs)
+                .Select(x => x.Trim(';') + ";")
+                .Distinct()
+                .OrderBy(x => x, StringComparer.Ordinal)
+                .ToArray();
 
         int count = 0;
         var members = new UITKBindableMemberContext[typeSymbol.GetMembers().Length];
@@ -66,6 +75,7 @@ internal record UITKDataSourceObjectContext
         return new UITKDataSourceObjectContext()
         {
             Namespace = ns,
+            Using = usingStrings,
             Parents = nestClassParents,
             TypeDeclarationKeyword = GetTypeDeclarationKeyword(typeDeclaration),
             ClassName = className,
@@ -73,6 +83,24 @@ internal record UITKDataSourceObjectContext
             IsDerivedUITKDataSourceObjectClass = isderived,
             HasInterfaceImplemented = hasInterfaceImplemented,
         };
+    }
+
+    static string GetNamespace(TypeDeclarationSyntax typeDeclaration)
+    {
+        SyntaxNode current = typeDeclaration;
+        while (current.Parent is { } parentDecl)
+        {
+            if (parentDecl is NamespaceDeclarationSyntax nsDeclaration)
+            {
+                return nsDeclaration.Name.ToFullString().Trim();
+            }
+            if (parentDecl is FileScopedNamespaceDeclarationSyntax fileScopedNamespaceDeclaration)
+            {
+                return fileScopedNamespaceDeclaration.Name.ToFullString().Trim();
+            }
+            current = parentDecl;
+        }
+        return string.Empty;
     }
 
     static bool IsValidInheritance(INamedTypeSymbol typeSymbol, out bool isderived)

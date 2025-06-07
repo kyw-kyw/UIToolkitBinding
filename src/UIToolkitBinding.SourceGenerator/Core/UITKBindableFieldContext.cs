@@ -81,7 +81,7 @@ internal sealed record UITKBindableFieldContext : UITKBindableMemberContext
         {
             span = span.Slice(1);
         }
-        else if (span.Slice(0, 2).SequenceEqual(['m', '_']))
+        else if (span.Length > 2 && span.Slice(0, 2).SequenceEqual(['m', '_']))
         {
             span = span.Slice(2);
         }

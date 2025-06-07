@@ -28,14 +28,13 @@ internal sealed class CodeEmitter_UITKDataSourceObject : CodeEmitter
 #pragma warning disable
 #nullable enable
 
-using System;
-using System.Collections.Generic;
-using UIToolkitBinding;
-using Unity.Properties;
-using UnityEngine;
-using UnityEngine.UIElements;
-
 """);
+        foreach (var usingString in context.Using)
+        {
+            if (string.IsNullOrEmpty(usingString)) continue;
+            Buffer.AppendLine(usingString);
+        }
+        if (context.Using.Length > 0) Buffer.AppendLine();
         if (!string.IsNullOrEmpty(context.Namespace))
         {
             Buffer.AppendLine($$"""
