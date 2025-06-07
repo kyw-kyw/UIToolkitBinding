@@ -1,0 +1,42 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Sample/UIToolkit/Uss/ScreenAnchor.uss?fileID=7433441132597879392&amp;guid=0c274f3ce8edbf842bd9512a2571ed5d&amp;type=3#ScreenAnchor" />
+    <Style src="project://database/Assets/Sample/UIToolkit/Uss/Rotation.uss?fileID=7433441132597879392&amp;guid=d50e0e5b36e45df4189622ca5df43fc6&amp;type=3#Rotation" />
+    <engine:VisualElement data-source-type="Sample.Rotation+EulerAngleData, Assembly-CSharp" name="roration__main-container" class="screen__anchor--center-left" style="flex-grow: 1;">
+        <engine:VisualElement name="rotation__slider-x-container" class="horizon-container rotation__slider-container">
+            <engine:Slider label="Rotation X" high-value="180" low-value="-180" name="slider-x" class="rotation__slider rotation__slider-label">
+                <Bindings>
+                    <engine:DataBinding property="value" data-source-path="EulerAngles.x" binding-mode="TwoWay" />
+                </Bindings>
+            </engine:Slider>
+            <engine:Label class="rotation__slider-value-label">
+                <Bindings>
+                    <engine:DataBinding property="text" data-source-path="EulerAngles.x" binding-mode="ToTarget" />
+                </Bindings>
+            </engine:Label>
+        </engine:VisualElement>
+        <engine:VisualElement name="rotation__slider-y-container" class="horizon-container rotation__slider-container">
+            <engine:Slider label="Rotation Y" high-value="180" low-value="-180" name="slider-y" class="rotation__slider rotation__slider-label">
+                <Bindings>
+                    <engine:DataBinding property="value" data-source-path="EulerAngles.y" binding-mode="TwoWay" />
+                </Bindings>
+            </engine:Slider>
+            <engine:Label class="rotation__slider-value-label">
+                <Bindings>
+                    <engine:DataBinding property="text" data-source-path="EulerAngles.y" binding-mode="ToTarget" />
+                </Bindings>
+            </engine:Label>
+        </engine:VisualElement>
+        <engine:VisualElement name="rotation__slider-z-container" class="horizon-container rotation__slider-container">
+            <engine:Slider label="Rotation Z" high-value="180" low-value="-180" name="slider-z" class="rotation__slider rotation__slider-label">
+                <Bindings>
+                    <engine:DataBinding property="value" data-source-path="EulerAngles.z" binding-mode="TwoWay" />
+                </Bindings>
+            </engine:Slider>
+            <engine:Label class="rotation__slider-value-label">
+                <Bindings>
+                    <engine:DataBinding property="text" data-source-path="EulerAngles.z" binding-mode="ToTarget" />
+                </Bindings>
+            </engine:Label>
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>
